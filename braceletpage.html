@@ -32,6 +32,12 @@
   </style>
 </head>
 <body>
+<header style="display:flex; justify-content:space-between; align-items:center; padding:10px 20px;">
+  <a href="index.html" style="text-decoration:none; color:#333;">← Back to Home page</a>
+  <a href="cart.html" id="cartLink" style="text-decoration:none; color:#333; font-weight:bold;">
+    🛒 Cart (<span id="cartCount">0</span>)
+  </a>
+</header>
 
  	  
 	  
@@ -110,6 +116,28 @@ fetch(apiUrl)
     document.getElementById("productGrid").innerHTML = "<p>Products werent able to be uploaded .</p>";
   });
 </script>
+
+<script>
+const CART_KEY = "nala_cart_v1";
+
+function getCart() {
+  const raw = localStorage.getItem(CART_KEY);
+  return raw ? JSON.parse(raw) : [];
+}
+
+function updateCartCount() {
+  const cart = getCart();
+  const countEl = document.getElementById("cartCount");
+  if (countEl) countEl.textContent = cart.length;
+}
+
+// aktualisiert beim Laden
+updateCartCount();
+
+// optional: globale Funktion für andere Seiten (z. B. cart.html)
+window.updateCartCount = updateCartCount;
+</script>
+
 
 
 </body>

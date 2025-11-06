@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Phonecharm Shop</title>
+  <title>Charms and addons</title>
   <link rel="stylesheet" href="produkt.css">
   <style type="text/css">
   .auto-style1 {
@@ -42,7 +42,7 @@
  	  
 	  
 <section id="shop" class="products">
-  <h2 style="height: 207px; width: 1471px;"><span lang="de">Our Phonecharm Offers!</span></h2>
+  <h2 style="height: 207px; width: 1471px;"><span lang="de">Select a Charm to levitate your Jewellery!</span></h2>
   <a href="index.html" style="text-decoration:none;color:#333;">← Back to Home page</a>
   <!-- Hier werden die Produkte dynamisch eingefügt -->
   <div id="productGrid" class="product-grid" style="display: flex; flex-wrap: wrap; gap: 20px; justify-content: center;">
@@ -50,45 +50,14 @@
   </div>
 </section>
 
-  <!-- Customization Section 
-  <section class="custom">
-    <h2>Create Your Special Phonecharm</h2>
-    <form style="width: 1381px; height: 215px">
-      <label>Material:
-        <select>
-          <option>Leather</option>
-          <option>Beads</option>
-          <option>Gold-Plated</option>
-        </select>
-      </label>
-
-      <label>Colour:
-        <select>
-          <option>Black</option>
-          <option>Pink</option>
-          <option>Rainbow</option>
-        </select>
-      </label>
-
-      <label>Charm:
-        <select>
-          <option>Star</option>
-          <option>Heart</option>
-          <option>None</option>
-        </select>
-      </label>
-
-      <button type="submit">Order Custom Phonecharms</button>
-    </form>
-  </section> -->
-
+  
   <!-- Footer -->
   <footer>
-    <p>© 202<span lang="de">5</span> Phonecharm Shop | Handmade with Love</p>
+    <p>© 202<span lang="de">5</span> Charms Shop | Handmade with Love</p>
   </footer>
 
 <script>
-const apiUrl = "https://script.google.com/macros/s/AKfycbwNN4QZSH5LUWMVIlLvvn0EONClFkl9weeslcvQJOHABM0ciauqWoCuudTANGIj4gXwRQ/exec"; 
+const apiUrl = "https://script.google.com/macros/s/AKfycbzCNqvv8T4iScoZismiFjP9gcA7LACFU5UEkBfA92x_sAH7LmzzGfO9cpx_ofl07WBcKg/exec"; 
 
 fetch(apiUrl)
   .then(res => res.json())
@@ -98,7 +67,7 @@ fetch(apiUrl)
       const card = document.createElement("div");
       card.className = "product";
       card.innerHTML = `
-        <a href="phonecharmproduct.html?id=${encodeURIComponent(p.id)}">
+        <a href="charmsandaddons.html?id=${encodeURIComponent(p.id)}">
           <img src="${p.images && p.images[0] ? p.images[0] : 'placeholder.jpg'}" 
                alt="${p.name}" 
                style="width:200px; height:200px; object-fit:cover;">
