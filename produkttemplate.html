@@ -1,0 +1,163 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+<title>Untitled 1</title>
+</head>
+
+<body>
+
+<pre><code class="language-html">&lt;!DOCTYPE html&gt;
+&lt;html lang="de"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;
+  &lt;title&gt;Produktseite&lt;/title&gt;
+  &lt;style&gt;
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background: #fafafa;
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 30px;
+      justify-content: center;
+    }
+
+    /* Galerie */
+    .gallery {
+      flex: 1 1 400px;
+      max-width: 500px;
+    }
+
+    .main-img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .thumbnails {
+      display: flex;
+      gap: 10px;
+    }
+
+    .thumbnails img {
+      width: 70px;
+      cursor: pointer;
+      border-radius: 5px;
+      border: 2px solid transparent;
+    }
+
+    .thumbnails img:hover {
+      border-color: #444;
+    }
+
+    /* Produktinfos */
+    .info {
+      flex: 1 1 300px;
+      max-width: 400px;
+    }
+
+    .info h1 {
+      margin: 0 0 10px;
+    }
+
+    .price {
+      font-size: 22px;
+      font-weight: bold;
+      margin: 15px 0;
+    }
+
+    .description {
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+
+    .sizes button {
+      padding: 10px 15px;
+      margin: 5px;
+      border: 1px solid #444;
+      border-radius: 5px;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .sizes button.active {
+      background: #444;
+      color: white;
+    }
+
+    .buy-btn {
+      display: inline-block;
+      margin-top: 20px;
+      padding: 12px 25px;
+      background: #e60023;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .buy-btn:hover {
+      background: #c4001d;
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;div class="container"&gt;
+    &lt;!-- Galerie --&gt;
+    &lt;div class="gallery"&gt;
+      &lt;img id="mainImg" src="produkt1_1.jpg" class="main-img" alt="Produktbild"&gt;
+      &lt;div class="thumbnails"&gt;
+        &lt;img src="produkt1_1.jpg" onclick="changeImage(this)"&gt;
+        &lt;img src="produkt1_2.jpg" onclick="changeImage(this)"&gt;
+        &lt;img src="produkt1_3.jpg" onclick="changeImage(this)"&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;!-- Produkt-Infos --&gt;
+    &lt;div class="info"&gt;
+      &lt;h1&gt;Sommerkleid&lt;/h1&gt;
+      &lt;p class="price"&gt;€29,99&lt;/p&gt;
+      &lt;p class="description"&gt;
+        Leichtes Sommerkleid aus atmungsaktiver Baumwolle. 
+        Perfekt für warme Tage. 
+        Erhältlich in mehreren Farben und Größen.
+      &lt;/p&gt;
+
+      &lt;h3&gt;Größe auswählen:&lt;/h3&gt;
+      &lt;div class="sizes"&gt;
+        &lt;button onclick="selectSize(this)"&gt;S&lt;/button&gt;
+        &lt;button onclick="selectSize(this)"&gt;M&lt;/button&gt;
+        &lt;button onclick="selectSize(this)"&gt;L&lt;/button&gt;
+        &lt;button onclick="selectSize(this)"&gt;XL&lt;/button&gt;
+      &lt;/div&gt;
+
+      &lt;button class="buy-btn"&gt;In den Warenkorb&lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+
+  &lt;script&gt;
+    // Bildwechsel
+    function changeImage(img) {
+      document.getElementById("mainImg").src = img.src;
+    }
+
+    // Größe auswählen
+    function selectSize(btn) {
+      document.querySelectorAll(".sizes button").forEach(b =&gt; b.classList.remove("active"));
+      btn.classList.add("active");
+    }
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</code></pre>
+
+</body>
+
+</html>

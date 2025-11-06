@@ -1,0 +1,213 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Warenkorb</title>
+  <style>
+    :root { --accent:#e60023; --bg:#fafafa; --card:#fff; --muted:#666; }
+    body { font-family: Arial, sans-serif; background:var(--bg); margin:20px; color:#222; }
+    .container { max-width:1000px; margin:0 auto; }
+    header { display:flex; justify-content:space-between; align-items:center; margin-bottom:18px; }
+    header a { text-decoration:none; color:#333; font-weight:600; }
+    .cart-list { display:flex; flex-direction:column; gap:12px; }
+    .item { background:var(--card); padding:12px; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.06); display:flex; gap:12px; align-items:center; }
+    .item img { width:100px; height:100px; object-fit:cover; border-radius:8px; }
+    .item .meta { flex:1; }
+    .item .meta strong { display:block; font-size:16px; margin-bottom:6px; }
+    .muted { color:var(--muted); font-size:14px; }
+    .price { color:var(--accent); font-weight:700; }
+    .remove-btn { background:transparent; border:1px solid #f0c0c6; color:#c00; padding:6px 10px; border-radius:8px; cursor:pointer; }
+    .summary { margin-top:18px; padding:12px; background:var(--card); border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.06); }
+    .actions { display:flex; gap:10px; margin-top:12px; align-items:center; }
+    .whatsapp { background:#25D366; color:#fff; border:none; padding:10px 14px; border-radius:8px; cursor:pointer; font-weight:700; }
+    .clear { background:#eee; border:none; padding:8px 12px; border-radius:8px; cursor:pointer; }
+    input[type=text], textarea { padding:8px; border-radius:6px; border:1px solid #ccc; width:100%; box-sizing:border-box; }
+    textarea { min-height:90px; resize:vertical; }
+    @media (max-width:700px){ .item { flex-direction:column; align-items:flex-start } .item img { width:100%; height:180px } }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <a href="nalahomepage.html">← Continue Shopping</a>
+      <div>Cart</div>
+    </header>
+
+    <main>
+      <div id="cartContainer" class="cart-list"></div>
+
+      <div id="emptyMsg" class="muted" style="display:none; margin-top:12px;">Your Cart is Empty.</div>
+
+      <div class="summary" id="summaryBlock" style="display:none;">
+        <div id="summaryText"></div>
+
+        <div style="margin-top:12px;">
+          <label style="display:block; margin-bottom:6px;">Your Telephone (optional, in case the shop has questions)</label>
+          <input id="buyerPhone" type="text" placeholder="+250 176 1234 5678">
+        </div>
+
+        <div style="margin-top:12px;">
+          <label style="display:block; margin-bottom:6px;">Additional details / Notes (e.g. color preference, delivery info)</label>
+          <textarea id="orderNotes" placeholder="Add any details for the order (size notes, preferred delivery time, etc.)"></textarea>
+        </div>
+
+        <div class="actions">
+          <button class="whatsapp" id="checkoutBtn">Order via Whatsapp</button>
+          <button class="clear" id="clearCartBtn">Empty Cart</button>
+        </div>
+
+        <p class="muted" style="margin-top:10px;">The order will be opened in WhatsApp with the message prefilled. Please press **Send** inside WhatsApp to complete the order.</p>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const CART_KEY = "nala_cart_v1";
+    const SHOP_WHATSAPP_NUMBER = "250796234127"; // fixed shop number
+
+    function getCart() {
+      const raw = localStorage.getItem(CART_KEY);
+      return raw ? JSON.parse(raw) : [];
+    }
+    function saveCart(cart) {
+      localStorage.setItem(CART_KEY, JSON.stringify(cart));
+      renderCart();
+      try { if (window.opener && window.opener.updateCartCount) window.opener.updateCartCount(); } catch(e){}
+      try { if (window.parent && window.parent.updateCartCount) window.parent.updateCartCount(); } catch(e){}
+    }
+
+    function renderCart() {
+      const cart = getCart();
+      const container = document.getElementById("cartContainer");
+      const emptyMsg = document.getElementById("emptyMsg");
+      const summaryBlock = document.getElementById("summaryBlock");
+      const summaryText = document.getElementById("summaryText");
+
+      container.innerHTML = "";
+      if (!cart || cart.length === 0) {
+        emptyMsg.style.display = "block";
+        summaryBlock.style.display = "none";
+        return;
+      }
+      emptyMsg.style.display = "none";
+      summaryBlock.style.display = "block";
+
+      let total = 0;
+      cart.forEach((it, idx) => {
+        const row = document.createElement("div");
+        row.className = "item";
+
+        const img = document.createElement("img");
+        img.src = it.image || "images/placeholder.jpg";
+        img.alt = it.name || "Produktbild";
+
+        const meta = document.createElement("div");
+        meta.className = "meta";
+
+        const title = document.createElement("strong");
+        title.textContent = it.name || "Produkt";
+
+        const info = document.createElement("div");
+        info.className = "muted";
+        let infoText = "";
+        if(it.variantLabel) infoText += it.variantLabel + "  ";
+        if(it.size) infoText += "| Size: " + it.size + "  ";
+        if(it.qty) infoText += "| Quantity: " + it.qty + "  ";
+        info.textContent = infoText.trim();
+
+        const priceLine = document.createElement("div");
+        priceLine.innerHTML = `<span class="price">${(Number(it.price) || 0).toFixed(2)} Rwf</span>`;
+
+        const removeBtn = document.createElement("button");
+        removeBtn.className = "remove-btn";
+        removeBtn.textContent = "Remove";
+        removeBtn.onclick = () => removeItem(idx);
+
+        meta.appendChild(title);
+        meta.appendChild(info);
+        meta.appendChild(priceLine);
+
+        row.appendChild(img);
+        row.appendChild(meta);
+        row.appendChild(removeBtn);
+
+        container.appendChild(row);
+
+        total += (Number(it.price) || 0) * (Number(it.qty) || 1);
+      });
+
+      summaryText.innerHTML = `<strong>Total amount:</strong> ${total.toFixed(2)} Rwf`;
+    }
+
+    function removeItem(index) {
+      const cart = getCart();
+      cart.splice(index, 1);
+      saveCart(cart);
+    }
+
+    function clearCart() {
+      if (!confirm("Are you sure you want to Empty the entire Cart?")) return;
+      localStorage.removeItem(CART_KEY);
+      renderCart();
+    }
+
+    // Open WhatsApp (app or web) with prefilled message including buyer phone, notes and cart items.
+    function checkoutViaWhatsApp() {
+      const cart = getCart();
+      if (!cart || cart.length === 0) { alert("Your Cart is Empty."); return; }
+
+      const buyerPhoneInput = document.getElementById("buyerPhone").value.trim();
+      const notes = document.getElementById("orderNotes").value.trim();
+
+      // Human readable message for clipboard and for user
+      let humanText = "New Order\n";
+      humanText += "Buyer: " + (buyerPhoneInput || "No input") + "\n\n";
+
+      let total = 0;
+      cart.forEach(it => {
+        const line = `${it.name}${it.variantLabel ? ' | ' + it.variantLabel : ''}${it.size ? ' | size: ' + it.size : ''} | Quantity: ${it.qty || 1} | Price: ${it.price} Rwf`;
+        humanText += line + "\n";
+        total += (Number(it.price) || 0) * (Number(it.qty) || 1);
+      });
+
+      humanText += "\nTotal: " + total.toFixed(2) + " Rwf";
+
+      if (notes) {
+        humanText += "\n\nNotes: " + notes;
+      }
+
+      // URL-encoded version for wa.me / whatsapp://
+      const urlEncoded = encodeURIComponent(humanText);
+      const waAppUrl = `whatsapp://send?phone=${SHOP_WHATSAPP_NUMBER}&text=${urlEncoded}`;
+      const waWebUrl = `https://wa.me/${SHOP_WHATSAPP_NUMBER}?text=${urlEncoded}`;
+
+      // Copy to clipboard if possible (so user can paste in case of issues)
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(humanText).catch(() => {/* ignore */});
+      }
+
+      // Try app scheme (mobile); fallback to web
+      try {
+        window.location.href = waAppUrl;
+      } catch (e) {
+        // ignore
+      }
+
+      setTimeout(() => {
+        // Open WhatsApp Web in new tab as fallback
+        window.open(waWebUrl, "_blank");
+        alert("WhatsApp was opened (App or Web). The order message is prepared — please press Send in WhatsApp.");
+        // Note: cart is NOT cleared automatically.
+      }, 600);
+    }
+
+    // Events
+    document.getElementById("clearCartBtn").addEventListener("click", clearCart);
+    document.getElementById("checkoutBtn").addEventListener("click", checkoutViaWhatsApp);
+
+    // initial render
+    renderCart();
+  </script>
+</body>
+</html>

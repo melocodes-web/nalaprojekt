@@ -1,0 +1,363 @@
+﻿<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Necklacesproduct</title>
+  <style>
+    :root { --accent:#e60023; --bg:#fafafa; --card-bg:#fff; --muted:#666; }
+    body { font-family: Arial, sans-serif; margin:20px; background:var(--bg); color:#222; }
+    header { display:flex; justify-content:space-between; align-items:center; max-width:1100px; margin:0 auto 16px; }
+    header a { color:#333; text-decoration:none; font-weight:600; }
+    .cart-link { background:#fff; padding:8px 12px; border-radius:8px; box-shadow:0 1px 4px rgba(0,0,0,0.06); }
+    .wrap { max-width:1100px; margin:0 auto; display:flex; gap:30px; flex-wrap:wrap; align-items:flex-start; }
+
+    /* Galerie */
+    .gallery { flex:1 1 480px; background:var(--card-bg); padding:14px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+    .main { position:relative; overflow:hidden; border-radius:8px; background:#f6f6f6; }
+    .main img { width:100%; height:auto; display:block; object-fit:contain; margin:0; }
+    .thumbs { display:flex; gap:8px; margin-top:10px; overflow-x:auto; padding-bottom:6px; align-items:center; }
+    .thumbs img { width:70px; height:70px; object-fit:cover; border-radius:6px; cursor:pointer; border:2px solid transparent; }
+    .thumbs img.active { border-color:var(--accent); box-shadow:0 0 0 3px rgba(230,0,35,0.12); }
+
+    .nav-arrow { position:absolute; top:50%; transform:translateY(-50%); background:rgba(0,0,0,0.35); color:#fff; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:5; }
+    .nav-left { left:10px; } .nav-right { right:10px; }
+
+    /* Info */
+    .info { flex:1 1 380px; max-width:420px; background:var(--card-bg); padding:18px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.06); }
+    .info h1 { margin:0 0 8px 0; font-size:22px; }
+    .price { color:var(--accent); font-weight:700; margin-bottom:12px; font-size:18px; }
+    .desc { line-height:1.5; color:#444; margin-bottom:12px; }
+    .sizes { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+    .sizes button { padding:8px 12px; border-radius:6px; border:1px solid #888; background:#fff; cursor:pointer; }
+    .sizes button.active { background:#222; color:#fff; border-color:#222; }
+
+    .variant-checkbox { display:inline-flex; gap:8px; align-items:center; padding:6px 8px; border-radius:8px; border:1px solid #eee; cursor:pointer; background:#fff; }
+    .variant-checkbox input[type=checkbox] { transform:scale(1.05); }
+    .qty-input { width:64px; padding:6px; border-radius:6px; border:1px solid #ccc; text-align:center; }
+
+    .cta { display:flex; gap:10px; align-items:center; }
+    .buy { background:var(--accent); color:#fff; border:none; padding:12px 18px; border-radius:8px; cursor:pointer; font-weight:700; }
+    .back { background:#eee; border:none; padding:10px 14px; border-radius:8px; cursor:pointer; }
+
+    .muted { color:var(--muted); font-size:14px; }
+
+    /* Admin input */
+    .admin-block { margin-top:20px; border-top:1px solid #eee; padding-top:10px; }
+    .admin-block input { padding:8px; border-radius:6px; border:1px solid #aaa; width:180px; }
+    .admin-block button { margin-left:8px; background:#222; color:#fff; padding:8px 12px; border-radius:6px; border:none; cursor:pointer; }
+
+    @media (max-width:900px) {
+      header, .wrap { padding:0 12px; }
+      .wrap { flex-direction:column; }
+      .variant-checkbox { width:100%; justify-content:space-between; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="Necklaceshomepage.html">← Back to previous page</a>
+    <a class="cart-link" href="cart.html">Cart (<span id="cartCount">0</span>)</a>
+  </header>
+
+  <div class="wrap" id="wrap">
+    <div class="gallery">
+      <div class="main" id="mainContainer">
+        <div class="nav-arrow nav-left" id="leftBtn" aria-label="Zurück">&#10094;</div>
+        <img id="mainImg" src="images/placeholder.jpg" alt="Produktbild">
+        <div class="nav-arrow nav-right" id="rightBtn" aria-label="Vor">&#10095;</div>
+      </div>
+      <div class="thumbs" id="thumbs"></div>
+    </div>
+
+    <div class="info" id="info">
+      <h1 id="title">Productname</h1>
+      <div class="price" id="price">Rwf</div>
+      <div class="desc" id="desc">Description</div>
+
+      <div>
+        <strong>Size:</strong>
+        <div class="sizes" id="sizes"></div>
+      </div>
+
+      <!-- Varianten + Mengen -->
+      <div style="margin:10px 0;">
+        <strong>Choose the Necklace you want:</strong>
+
+        <!-- Menge für Hauptbild (index 0) -->
+       <!-- <div style="margin-top:8px; display:flex; align-items:center; gap:8px;">
+          <label style="font-weight:600;">Hauptvariante Menge:</label>
+          <input id="qty_0" class="qty-input" type="number" min="1" value="1" />
+          <small class="muted">Falls keine Variante ausgewählt wird, wird das Hauptbild mit dieser Menge in den Warenkorb gelegt.</small>
+        </div>-->
+
+        <!-- Checkboxen + Mengen für weitere Varianten -->
+        <div id="variantCheckboxes" style="margin-top:8px; display:flex; gap:8px; flex-wrap:wrap;"></div>
+
+        <small class="muted" style="display:block; margin-top:6px;">(The first picture is the main varianty and isnt shown as a checkbox.)</small>
+      </div>
+
+      <div style="margin-top:12px" id="availability"></div>
+
+      <div style="margin-top:14px" class="cta">
+        <button class="buy" id="addToCart">In the Cart</button>
+        <button class="back" onclick="location.href='Necklaceshomepage.html'">Back</button>
+      </div>
+
+      <!-- Admin: WhatsApp-Nummer speichern (sichtbar für deine Freundin) -->
+     <!-- <div class="admin-block" id="adminShopPhone" style="margin-top:18px;">
+        <label for="adminShopPhoneInput" style="font-weight:600;">Shop WhatsApp-Nummer:</label>
+        <input id="adminShopPhoneInput" type="text" placeholder="z. B. 491701234567">
+        <button id="saveShopPhoneBtn">Speichern</button>
+        <div class="muted" style="margin-top:6px;">Die eingegebene Nummer wird lokal im Browser gespeichert und für den Checkout verwendet.</div>
+      </div>-->
+
+    </div>
+  </div>
+
+  <script>
+    // ---------- Konfiguration ----------
+    const apiUrl = "https://script.google.com/macros/s/AKfycbwtWIoKA0KFwBnWL-95RMFP0VfopRk0OsDvo67FLuJkMpyAEehwsJZaRMiagg168IY9AQ/exec";
+    const id = new URLSearchParams(window.location.search).get("id");
+
+    // ---------- Warenkorb (localStorage) ----------
+    const CART_KEY = "nala_cart_v1";
+    function getCart(){ const raw = localStorage.getItem(CART_KEY); return raw ? JSON.parse(raw) : []; }
+    function saveCart(cart){ localStorage.setItem(CART_KEY, JSON.stringify(cart)); updateCartCount(); }
+    function addToCart(item){
+      const cart = getCart();
+      // identische Position = gleiche id + variantIndex + size
+      const found = cart.find(c => c.id === item.id && c.variantIndex === item.variantIndex && c.size === item.size);
+      if(found){ found.qty = Number(found.qty) + Number(item.qty); }
+      else cart.push(item);
+      saveCart(cart);
+    }
+    function updateCartCount(){
+      const el = document.getElementById("cartCount");
+      if(!el) return;
+      const total = getCart().reduce((s,i)=> s + Number(i.qty||0), 0);
+      el.textContent = total;
+    }
+    updateCartCount();
+
+    // ---------- Helfer: string -> array (CSV, multiline or JSON array) ----------
+    function toArray(val){
+      if(val === undefined || val === null) return [];
+      if(Array.isArray(val)) return val;
+      if(typeof val === "string"){
+        try {
+          const parsed = JSON.parse(val);
+          if(Array.isArray(parsed)) return parsed;
+        } catch(e){}
+        return val.split(/\s*,\s*|\r?\n/).map(x=>x.trim()).filter(Boolean);
+      }
+      return [];
+    }
+
+    // Optional: Cloudinary auto-optimierung (kein Muss)
+    function ensureCloudinaryAuto(url){
+      if(!url) return url;
+      if(url.includes("/upload/") && !url.includes("/upload/f_auto")) return url.replace("/upload/", "/upload/f_auto,q_auto/");
+      return url;
+    }
+
+    
+    // ---------- Page logic ----------
+    if(!id){
+      document.getElementById("wrap").innerHTML = "<p>No Product Id found.</p>";
+    } else {
+      fetch(`${apiUrl}?id=${encodeURIComponent(id)}`)
+        .then(res => res.json())
+        .then(p => {
+          if(!p || p.error){
+            document.getElementById("wrap").innerHTML = "<p>Product not found.</p><p><a href='Necklaceshomepage.html'>Back</a></p>";
+            return;
+          }
+
+          // Produktdaten (robust gegenüber verschiedenen Feldnamen)
+          const prod = {
+            id: p.id || p.ID || p.name || p.Name || ("prod-" + Math.random().toString(36).slice(2,8)),
+            name: p.name || p.Name || "",
+            price: (p.price ?? p.preis ?? 0),
+            description: p.description || p.beschreibung || "",
+            availability: (p.availability ?? p.verfügbar ?? true),
+            sizes: toArray(p.sizes || p.größen || []),
+            images: toArray(p.images || p.bilder || []).map(s => ensureCloudinaryAuto(s))
+          };
+
+          // fill UI
+          document.getElementById("title").textContent = prod.name || "Kein Name";
+          document.getElementById("price").textContent = "Rwf " + (Number(prod.price) || 0);
+          document.getElementById("desc").textContent = prod.description || "";
+          document.getElementById("availability").innerHTML = prod.availability ? "<strong style='color:green'>In Stock</strong>" : "<strong style='color:red'>Sold out</strong>";
+
+          // sizes
+          const sizesContainer = document.getElementById("sizes");
+          sizesContainer.innerHTML = "";
+          prod.sizes.forEach(s => {
+            const btn = document.createElement("button");
+            btn.textContent = s;
+            btn.onclick = () => {
+              document.querySelectorAll(".sizes button").forEach(b=>b.classList.remove("active"));
+              btn.classList.add("active");
+            };
+            sizesContainer.appendChild(btn);
+          });
+
+          // Galerie + Varianten (erste Bild ist Hauptbild, nicht als Checkbox)
+          const mainImg = document.getElementById("mainImg");
+          const thumbs = document.getElementById("thumbs");
+          const variantCheckboxes = document.getElementById("variantCheckboxes");
+          const leftBtn = document.getElementById("leftBtn");
+          const rightBtn = document.getElementById("rightBtn");
+
+          let images = prod.images.slice(); // copy
+          if(images.length === 0) images = ["images/placeholder.jpg"];
+          let current = 0;
+
+          function populateVariantsAndThumbs(){
+            thumbs.innerHTML = "";
+            variantCheckboxes.innerHTML = "";
+
+            // Thumbnails (inkl. erstes Bild)
+            images.forEach((src, i) => {
+              const t = document.createElement("img");
+              t.src = src;
+              t.alt = "Vorschaubild " + (i+1);
+              t.className = i === current ? "active" : "";
+              t.onclick = () => {
+                current = i;
+                renderGallery();
+                // toggle checkbox if exists (nicht für index 0)
+                const cb = variantCheckboxes.querySelector(`input[data-index='${i}']`);
+                if(cb) cb.checked = !cb.checked;
+                // enable/disable qty if checkbox toggled
+                toggleQtyForIndex(i);
+              };
+              thumbs.appendChild(t);
+            });
+
+            // Menge-Feld für index 0 ist separat (qty_0) — weiter Varianten ab i>=1 mit Checkbox+Qty
+            images.forEach((src, i) => {
+              if(i === 0) return; // skip first (Hauptbild)
+              // wrapper mit checkbox + label + qty input
+              const wrapper = document.createElement("label");
+              wrapper.className = "variant-checkbox";
+              wrapper.style.display = "inline-flex";
+              wrapper.style.alignItems = "center";
+              wrapper.style.gap = "8px";
+
+              const cb = document.createElement("input");
+              cb.type = "checkbox";
+              cb.dataset.index = String(i);
+
+              // qty input, standard 1, disabled bis checkbox aktiv
+              const qty = document.createElement("input");
+              qty.type = "number";
+              qty.min = "1";
+              qty.value = "1";
+              qty.id = `qty_${i}`;
+              qty.className = "qty-input";
+              qty.disabled = true;
+
+              cb.addEventListener("change", () => {
+                qty.disabled = !cb.checked;
+                // optische Markierung des entsprechenden Thumbnail
+                const imgs = thumbs.querySelectorAll("img");
+                const imgEl = imgs[i];
+                if(imgEl) imgEl.style.boxShadow = cb.checked ? "0 0 0 3px rgba(230,0,35,0.12)" : "";
+              });
+
+              const span = document.createElement("span");
+              span.textContent = "Picture " + (i+1);
+
+              wrapper.appendChild(cb);
+              wrapper.appendChild(span);
+              wrapper.appendChild(qty);
+
+              variantCheckboxes.appendChild(wrapper);
+            });
+          }
+
+          // Hilfsfunktion: toggle qty input (z. B. wenn Thumbnail geklickt toggelt checkbox)
+          function toggleQtyForIndex(i){
+            if(i === 0) return;
+            const cb = variantCheckboxes.querySelector(`input[data-index='${i}']`);
+            if(!cb) return;
+            cb.checked = !cb.checked;
+            const qty = document.getElementById(`qty_${i}`);
+            if(qty) qty.disabled = !cb.checked;
+            const imgs = thumbs.querySelectorAll("img");
+            const imgEl = imgs[i];
+            if(imgEl) imgEl.style.boxShadow = cb.checked ? "0 0 0 3px rgba(230,0,35,0.12)" : "";
+          }
+
+          function renderGallery(){
+            if(!images.length) return;
+            mainImg.src = images[current] || "images/placeholder.jpg";
+            const imgs = thumbs.querySelectorAll("img");
+            imgs.forEach((img, idx) => {
+              img.classList.toggle("active", Number(idx) === Number(current));
+              const cb = variantCheckboxes.querySelector(`input[data-index='${idx}']`);
+              if(cb) img.style.boxShadow = cb.checked ? "0 0 0 3px rgba(230,0,35,0.12)" : "";
+            });
+          }
+
+          populateVariantsAndThumbs();
+          renderGallery();
+
+          leftBtn.onclick = ()=> { if(!images.length) return; current = (current-1 + images.length) % images.length; renderGallery(); };
+          rightBtn.onclick = ()=> { if(!images.length) return; current = (current+1) % images.length; renderGallery(); };
+          document.addEventListener("keydown", e=> { if(e.key === "ArrowLeft") leftBtn.click(); if(e.key === "ArrowRight") rightBtn.click(); });
+
+          // ---------- addToCart: sammle ausgewählte Varianten (checkboxes) + Mengen ----------
+          document.getElementById("addToCart").addEventListener("click", ()=> {
+            // qty für Hauptbild
+            const qty0Input = document.getElementById("qty_0");
+            const qty0 = Math.max(1, Number(qty0Input ? qty0Input.value : 1));
+
+            const sizeBtn = document.querySelector(".sizes button.active");
+            const size = sizeBtn ? sizeBtn.textContent : "";
+
+            // ausgewählte variant-indices (checkboxes)
+            const selected = Array.from(variantCheckboxes.querySelectorAll("input[type='checkbox']"))
+              .filter(cb => cb.checked)
+              .map(cb => Number(cb.dataset.index));
+
+            // Falls keine Checkbox ausgewählt, füge standardmäßig das erste Bild (index 0) mit qty0 hinzu
+            const toAdd = selected.length ? selected : [0];
+
+            toAdd.forEach(idx => {
+              // lese qty: für idx==0 aus qty_0, sonst aus qty_{idx}
+              const qtyVal = idx === 0
+                ? qty0
+                : Math.max(1, Number(document.getElementById(`qty_${idx}`)?.value || 1));
+
+              const item = {
+                id: prod.id,
+                name: prod.name,
+                price: Number(prod.price) || 0,
+                variantIndex: idx,
+                variantLabel: "Picture " + (idx+1),
+                size: size,
+                qty: qtyVal,
+                image: images[idx] || ""
+              };
+              addToCart(item);
+            });
+
+            alert("Chosen item(s) were added to the cart.");
+          });
+
+        })
+        .catch(err => {
+          console.error("Error while loading:", err);
+          document.getElementById("wrap").innerHTML = "<p>Error. Check Code.</p>";
+        });
+    }
+
+    
+
+  </script>
+</body>
+</html>
