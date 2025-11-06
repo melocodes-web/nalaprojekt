@@ -70,11 +70,7 @@
       <div class="price" id="price">Rwf</div>
       <div class="desc" id="desc">Description</div>
 
-      <div>
-        <strong>Size / Measurement:</strong>
-        <div class="sizes" id="sizes"></div>
-      </div>
-
+     
       <!-- Varianten + Mengen -->
       <div style="margin:10px 0;">
         <strong>Choose the variant(s) you want:</strong>
@@ -169,23 +165,7 @@
           document.getElementById("desc").textContent = prod.description || "";
           document.getElementById("availability").innerHTML = prod.availability ? "<strong style='color:green'>In Stock</strong>" : "<strong style='color:red'>Sold out</strong>";
 
-          // sizes (optional suggestions)
-          const sizesContainer = document.getElementById("sizes");
-          sizesContainer.innerHTML = "";
-          if(prod.sizes && prod.sizes.length){
-            prod.sizes.forEach(s => {
-              const btn = document.createElement("button");
-              btn.textContent = s;
-              btn.onclick = () => {
-                document.querySelectorAll(".sizes button").forEach(b=>b.classList.remove("active"));
-                btn.classList.add("active");
-              };
-              sizesContainer.appendChild(btn);
-            });
-          } else {
-            sizesContainer.innerHTML = `<div class="muted">No size suggestions. Enter measurement on checkout page.</div>`;
-          }
-
+          
           // Galerie + Varianten (jetzt Checkbox+Qty für alle Bilder inklusive Index 0)
           const mainImg = document.getElementById("mainImg");
           const thumbs = document.getElementById("thumbs");
