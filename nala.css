@@ -8,7 +8,7 @@
   padding: 0;
   width: 100%;            /* passt sich jeder Bildschirmbreite an */
   background-color: #E6E6FA; /* helles Lila (hell-lilac) */
-  overflow-x: hidden;     /* verhindert horizontales Scrollen */
+  overflow-x: auto;     /* verhindert horizontales Scrollen */
   overflow-y: auto; 
 }
 
